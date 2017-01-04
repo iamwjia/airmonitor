@@ -97,19 +97,18 @@ smartconfig_done(sc_status status, void *pdata)
 			printf("SC_STATUS_LINK_OVER\n");
 			user_set_wifi_led_on();
 			smartconfig_stop();
-			if(work_mode != WORK_MODE_BAROMETRIC || work_mode != WORK_MODE_AUDIO) 
-			{
-				OLED_clear();
-				OLED_show_chn(0, 0, 15);   //show Сe:
-				OLED_show_str(18, 0, "e:", 2);
-				OLED_show_chn(0, 2, 8);    //show 
-				OLED_show_chn(18, 2, 9);
-				OLED_show_chn(36, 2, 10);
-				OLED_show_chn(54, 2, 11);
-				OLED_show_chn(72, 2, 13);
-				OLED_show_chn(90, 2, 14);
-				OLED_show_str(108, 2, "  ", 2);
-			}
+
+			OLED_clear();
+			OLED_show_chn(0, 0, 15);   //show Сe:
+			OLED_show_str(18, 0, "e:", 2);
+			OLED_show_chn(0, 2, 8);    //show 
+			OLED_show_chn(18, 2, 9);
+			OLED_show_chn(36, 2, 10);
+			OLED_show_chn(54, 2, 11);
+			OLED_show_chn(72, 2, 13);
+			OLED_show_chn(90, 2, 14);
+			OLED_show_str(108, 2, "  ", 2);
+
 			delay_s(2);
 			system_restart();
 			break;
@@ -163,18 +162,16 @@ airkiss_key_poll_task(void *pvParameters)
 				wifi_reconnect_start_flag = 0;
 				smartconfig_start(smartconfig_done); 	//airkiss start
 				user_set_wifi_led_delay(500);
-				if(work_mode != WORK_MODE_BAROMETRIC || work_mode != WORK_MODE_AUDIO) 
-				{
-					OLED_clear();
-					OLED_show_chn(0, 0, 15);    //show Сe:
-					OLED_show_str(18, 0, "e:", 2);
-					OLED_show_chn(0, 2, 8);    //show ����������...
-					OLED_show_chn(18, 2, 9);
-					OLED_show_chn(36, 2, 10);
-					OLED_show_chn(54, 2, 11);
-					OLED_show_chn(72, 2, 12);
-					OLED_show_str(90, 2, "...", 2);
-				}
+				
+				OLED_clear();
+				OLED_show_chn(0, 0, 15);    //show Сe:
+				OLED_show_str(18, 0, "e:", 2);
+				OLED_show_chn(0, 2, 8);    //show ����������...
+				OLED_show_chn(18, 2, 9);
+				OLED_show_chn(36, 2, 10);
+				OLED_show_chn(54, 2, 11);
+				OLED_show_chn(72, 2, 12);
+				OLED_show_str(90, 2, "...", 2);
 				//break;
 			}
 		}
@@ -315,31 +312,25 @@ void user_init(void)
 //	struct ip_info info;
 	
     os_printf("now SDK version:%s\n", system_get_sdk_version());
-
-	// show logo
+	///< Init hardware
+	RGB_light_init();		///< RGB init
+	DHT11_init();
+	i2c_master_gpio_init(); ///< I2C init
+	OLED_init(); 			///< OLED init
+	OLED_clear();
+	///< show logo
 	user_show_logo();
 
-	if (RETURN_OK != user_get_work_mode(&work_mode)) 
-	{
-		printf("get work mode fail !!!\n");
-		return;
-	}
-
-	if (RETURN_OK != user_init_work_mode(work_mode)) 
-	{
-		printf("init work mode fail !!!\n");
-		return;
-	}
-	// wifi led control
+	///< wifi led control
 	if(pdTRUE != xTaskCreate(user_wifi_led_control, "wifi_led_control", 256, NULL, 8, NULL))
 		os_printf("Create user wifi led task failed\n");
-	//wifi event handle
+	///< wifi event handle
 	wifi_set_event_handler_cb(et_wifi_event_cb);
 //	wifi_status_led_install(WIFI_STATUS_IO_NUM, WIFI_STATUS_IO_MUX, WIFI_STATUS_IO_FUNC);
 	wifi_set_opmode(STATION_MODE);
 
 	memset(&config, 0, sizeof(struct station_config));
-	if(wifi_station_get_config_default(&config) == true)//Read wifi station parameters which store in falsh para space
+	if(wifi_station_get_config_default(&config) == true)///< Read wifi station parameters which store in falsh para space
 	{
 		os_printf("SSID:%s \n",config.ssid);
 		os_printf("AP_MAC:"MACSTR"\n", MAC2STR(config.bssid));

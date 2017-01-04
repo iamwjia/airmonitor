@@ -94,6 +94,9 @@ Accept-Language: zh-CN,zh;q=0.8\r\n\r\n"
 #define WIFI_STATUS_IO_FUNC  			(FUNC_GPIO4)
 #define WIFI_STATUS_IO_PIN				(GPIO_Pin_4)
 
+#define WIFI_LED_DELAY_Y				(1)
+#define WIFI_LED_DELAY_N				(0)
+
 #define ARRAY_LEN(x)					(sizeof(x) / sizeof(x[0]))
 
 typedef enum {
@@ -147,7 +150,7 @@ typedef struct {
 	et_char file_id[128];
 } et_dfs_file_info;
 
-void airkiss_key_init(key_gpio_t*key);
+void user_wifi_led_control(void *param);
 et_uint32 user_get_run_mode();
 et_int32 parse_msg_from_mqtt(et_uchar *msg_buf, et_int32 data_len);
 void DHT11_init();
